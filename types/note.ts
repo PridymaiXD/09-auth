@@ -9,6 +9,11 @@ export interface Note {
   updatedAt: string; // Чому
 }
 
+export interface FetchNotesResponse {
+  notes: Note[];
+  totalPages: number;
+}
+
 export interface CreateNotePayload {
   title: string;
   content: string;

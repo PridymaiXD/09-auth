@@ -1,23 +1,26 @@
 import axios from 'axios';
-import { type Note, type CreateNotePayload } from '@/types/note';
+import { Note, CreateNotePayload, FetchNotesResponse} from '@/types/note';
 
-
-
+const API_BASE_URL = 'https://notehub-public.goit.study/api';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_NOTEHUB_URL || 'https://notehub-public.goit.study/api',
+  baseURL: API_BASE_URL,
   headers: {
     Authorization: `Bearer ${process.env.NEXT_PUBLIC_NOTEHUB_TOKEN}`,
   },
 });
-export interface FetchNotesResponse {
-  notes: Note[];
-  totalPages: number;
-}
-export const fetchNotes = async (page = 1, search = ''): Promise<FetchNotesResponse> => {
-  const response = await api.get<FetchNotesResponse>('/notes', {
-    params: { page, search },
-  });
+
+export const fetchNotes = async (
+  page = 1,
+  search = '',
+  tag?: string
+): Promise<FetchNotesResponse> => {
+  const params: Record<string, string | number> = { page, search };
+  if (tag && tag !== 'all') {
+    params.tag = tag;
+  }
+
+  const response = await api.get<FetchNotesResponse>('/notes', { params });
   return response.data;
 };
 
