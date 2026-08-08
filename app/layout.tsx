@@ -14,8 +14,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
-        {modal}
+        <TanStackProvider>
+          <Header />
+          <main>{children}</main>
+          {modal}
+          <Footer />
+        </TanStackProvider>
       </body>
     </html>
   );
