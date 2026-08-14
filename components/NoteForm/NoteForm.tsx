@@ -2,13 +2,13 @@
 
 import { ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createNote } from '@/lib/api';
 import { useNoteStore } from '@/lib/store/noteStore';
 import css from './NoteForm.module.css';
 
 export default function NoteForm() {
-  const router = RouterHook();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { draft, setDraft, clearDraft } = useNoteStore();
 
@@ -25,7 +25,10 @@ export default function NoteForm() {
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setDraft({ [name]: value });
+    setDraft({
+      ...draft,
+      [name]: value,
+    });
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -59,7 +62,7 @@ export default function NoteForm() {
           name="content"
           value={draft.content}
           onChange={handleChange}
-          rows={5}
+          rows={4}
         />
       </div>
 
@@ -79,18 +82,14 @@ export default function NoteForm() {
         </select>
       </div>
 
-      <div className={css.buttons}>
+      <div className={css.actions}>
         <button type="button" onClick={handleCancel} className={css.cancelBtn}>
           Cancel
         </button>
-        <button type="submit" disabled={mutation.isPending} className={css.submitBtn}>
-          {mutation.isPending ? 'Creating...' : 'Create Note'}
+        <button type="submit" className={css.submitBtn}>
+          Create
         </button>
       </div>
     </form>
   );
-}
-
-function RouterHook() {
-  return useRouter();
 }
