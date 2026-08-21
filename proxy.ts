@@ -16,36 +16,38 @@ export async function middleware(request: NextRequest) {
       if (sessionRes && sessionRes.status === 200) {
         isAuth = true;
         const setCookieHeader = sessionRes.headers['set-cookie'];
-if (setCookieHeader) {
-  if (Array.isArray(setCookieHeader)) {
-    setCookieHeader.forEach((cookie) => response.headers.append('set-cookie', cookie));
-  } else {
-    response.headers.set('set-cookie', setCookieHeader);
-  }
-}
+        if (setCookieHeader) {
+          if (Array.isArray(setCookieHeader)) {
+            setCookieHeader.forEach((cookie) => response.headers.append('set-cookie', cookie));
+          } else {
+            response.headers.set('set-cookie', setCookieHeader);
+          }
+        }
       }
     } catch {
       isAuth = false;
     }
   }
 
-  const isPublicRoute = pathname.startsWith('/login') || pathname.startsWith('/register');
+  // Змінено маршрути на /sign-in та /sign-up
+  const isPublicRoute = pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up');
   const isPrivateRoute = pathname.startsWith('/notes') || pathname.startsWith('/profile');
 
   if (isAuth && isPublicRoute) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
+  // Редирект на /sign-in
   if (!isAuth && isPrivateRoute) {
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
   return response;
 }
 
 export const matcher = [
-  '/login',
-  '/register',
+  '/sign-in',
+  '/sign-up',
   '/profile/:path*',
   '/notes/:path*',
 ];
