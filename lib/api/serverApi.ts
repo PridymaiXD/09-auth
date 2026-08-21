@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { api } from './api';
 import { User } from '@/types/user';
 import { Note } from '@/types/note';
+import { AxiosResponse } from 'axios';
 
 const getAuthHeaders = async () => {
   const cookieStore = await cookies();
@@ -33,8 +34,12 @@ export const getMe = async (): Promise<User> => {
   return response.data;
 };
 
-export const checkSession = async (): Promise<User | null> => {
-  const headers = await getAuthHeaders();
-  const response = await api.get<User | null>('/auth/session', { headers: headers.Header });
-  return response.data;
+export const checkSession = async (): Promise<AxiosResponse> => {
+  const cookieStore = await cookies();
+  const response = await api.get('/auth/session', {
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
+  });
+  return response;
 };
