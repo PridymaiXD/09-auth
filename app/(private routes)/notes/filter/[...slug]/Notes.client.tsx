@@ -31,7 +31,7 @@ export default function NotesClient({ tag }: NotesClientProps) {
   fetchNotes({
     search: debouncedSearch,
     page,
-    tag: tag === 'All' ? undefined : tag,
+    tag: tag === 'All' ? '' : tag,
   }),
   });
 
