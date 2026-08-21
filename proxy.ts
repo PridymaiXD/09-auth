@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
+import { parseSetCookie } from 'cookie';
 import { checkSession } from '@/lib/api/serverApi';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
+
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
   const refreshToken = cookieStore.get('refreshToken')?.value;
@@ -18,7 +19,7 @@ export async function middleware(request: NextRequest) {
       const sessionRes = await checkSession();
       if (sessionRes && sessionRes.status === 200) {
         isAuth = true;
-        
+
         const setCookieHeader = sessionRes.headers['set-cookie'];
         if (setCookieHeader) {
           const cookieStrings = Array.isArray(setCookieHeader)
@@ -26,10 +27,9 @@ export async function middleware(request: NextRequest) {
             : [setCookieHeader];
 
           cookieStrings.forEach((cookieStr) => {
-            const [nameValue] = cookieStr.split(';');
-            const [name, value] = nameValue.split('=');
-            if (name && value) {
-              response.cookies.set(name.trim(), value.trim());
+            const parsed = parseSetCookie(cookieStr);
+            if (parsed && parsed.name) {
+              response.cookies.set(parsed as any);
             }
           });
         }
